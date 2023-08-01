@@ -12,7 +12,7 @@ import { useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { firebaseAuth } from '../firebase';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUser } from '../redux/actions/userAction';
+import { clearUser, setUser } from '../redux/actions/userAction';
 
 const App = () => {
   return <section></section>;
@@ -30,17 +30,19 @@ export const AppRoutes = (props) => {
   //     },
   //   ];
   //   const element = useRoutes([...routes]);
-  const naviagate = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.user.isLoading);
   console.log(isLoading);
   useEffect(() => {
     onAuthStateChanged(firebaseAuth, (user) => {
+      console.log(user);
       if (user) {
-        naviagate('/');
+        navigate('/');
         dispatch(setUser(user));
       } else {
-        naviagate('/login');
+        navigate('/login');
+        dispatch(clearUser(user));
       }
     });
   }, []);
