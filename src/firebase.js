@@ -1,11 +1,12 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
+import { getAuth } from 'firebase/auth';
+import { getDatabase } from 'firebase/database';
 
 import 'firebase/auth';
 import 'firebase/database';
 import 'firebase/storage';
-import { getAuth } from 'firebase/auth';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -19,10 +20,13 @@ const firebaseConfig = {
   messagingSenderId: '668086216351',
   appId: '1:668086216351:web:1e0a7fd00eacfa9198a4aa',
   measurementId: 'G-32FG584NM2',
+  databaseURL:
+    'https://react-firebase-chat-app-98f87-default-rtdb.asia-southeast1.firebasedatabase.app/',
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 export const firebaseAuth = getAuth(app);
+export const firebaseDatabase = getDatabase(app);
 // const analytics = getAnalytics(app);

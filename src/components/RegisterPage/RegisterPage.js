@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { firebaseAuth } from '../../firebase';
+import { firebaseAuth, firebaseDatabase } from '../../firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { getDatabase, ref, set, push } from 'firebase/database';
 import { useState } from 'react';
 import md5 from 'md5';
 
@@ -24,12 +25,21 @@ export const RegisterPage = () => {
         formData.email,
         formData.password
       );
-      updateProfile(firebaseAuth.currentUser, {
+      await updateProfile(firebaseAuth.currentUser, {
         displayName: formData.name,
         photoURL: `http:gravatar.com/avatar/${md5(
           createdUser.user.email
         )}?d=identicon`,
       });
+
+      // Firebase DB
+
+      await set(ref(firebaseDatabase, 'users/' + createdUser.user.uid), {
+        name: createdUser.user.displayName,
+        email: createdUser.user.email,
+        image: createdUser.user.photoURL,
+      });
+      console.log(firebaseDatabase);
 
       setLoading(false);
       console.log(createdUser);
