@@ -1,11 +1,11 @@
 import { CLEAR_USER, SET_PHOTO_URL, SET_USER } from '../actions/types';
 
-const initailUserState = {
+const initialUserState = {
   currentUser: null,
   isLoading: true,
 };
 
-export const user = (state = initailUserState, action) => {
+export const user = (state = initialUserState, action) => {
   switch (action.type) {
     case SET_USER:
       return {
