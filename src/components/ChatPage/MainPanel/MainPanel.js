@@ -11,6 +11,7 @@ export const MainPanel = () => {
   const [isMessageLoading, setIsMessageLoading] = useState(true);
   const [isFirstLoaded, setIsFirstLoaded] = useState(false);
   const chatRoom = useSelector((state) => state.chatRoom.currentChatRoom);
+  const [m, setM] = useState([]);
 
   const messagesRef = ref(firebaseDatabase, 'messages');
 
@@ -37,14 +38,41 @@ export const MainPanel = () => {
     let newMessages = [];
     onChildAdded(child(messagesRef, chatRoomId), (data) => {
       newMessages.push(data.val());
+      setMessages([...newMessages]);
     });
-    setMessages(newMessages);
+
     setIsMessageLoading(false);
+  };
+  //
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setSearchLoading(true);
+    handleSearchMessages();
+  };
+
+  const handleSearchMessages = () => {
+    const chatRoomMessages = [...messages];
+    const regex = new RegExp(searchTerm, 'gi');
+    const newSearchResults = chatRoomMessages.reduce((acc, message) => {
+      if (
+        (message.content && message.content.match(regex)) ||
+        message.user.name.match(regex)
+      ) {
+        acc.push(message);
+      }
+      return acc;
+    }, []);
+    setSearchResults(newSearchResults);
   };
 
   return (
     <div style={{ padding: '2rem 2rem 0 2rem' }}>
-      <MessageHeader />
+      <MessageHeader handleSearchChange={handleSearchChange} />
 
       <div
         style={{
@@ -56,13 +84,25 @@ export const MainPanel = () => {
           overflowY: 'auto',
         }}
       >
-        {messages.map((message, i) => (
-          <Message
-            key={message.timeStamp}
-            message={message}
-            user={message.user}
-          />
-        ))}
+        {searchTerm
+          ? searchResults.map((message, i) => {
+              return (
+                <Message
+                  key={message.timeStamp}
+                  message={message}
+                  user={message.user}
+                />
+              );
+            })
+          : messages.map((message, i) => {
+              return (
+                <Message
+                  key={message.timeStamp}
+                  message={message}
+                  user={message.user}
+                />
+              );
+            })}
       </div>
 
       <MessageForm />

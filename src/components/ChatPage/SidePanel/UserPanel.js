@@ -8,13 +8,7 @@ import {
   firebaseStorage,
 } from '../../../firebase';
 import { useRef } from 'react';
-import {
-  getDownloadURL,
-  ref,
-  uploadBytes,
-  uploadBytesResumable,
-} from 'firebase/storage';
-import mime from 'mime-types';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { setPhotoUrl } from '../../../redux/actions/userAction';
 import { child, set, ref as rbRef, update } from 'firebase/database';
 
@@ -35,7 +29,7 @@ export const UserPanel = () => {
 
   const handleUploadImage = async (e) => {
     const file = e.target.files[0];
-    const metadata = { contentType: mime.lookup(file?.name) };
+    const metadata = { contentType: file.type };
 
     try {
       const storage = ref(firebaseStorage, `userImage/${user.uid}`);
@@ -49,8 +43,6 @@ export const UserPanel = () => {
       await update(child(rbRef(firebaseDatabase, 'users/'), user.uid), {
         image: imageUrl,
       });
-
-      console.log(imageUrl);
     } catch (error) {
       console.error(error);
     }

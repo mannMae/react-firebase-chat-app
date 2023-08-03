@@ -80,8 +80,8 @@ export const ChatRooms = () => {
     let newChatRooms = [];
     onChildAdded(chatRoomsRef, (data) => {
       newChatRooms.push(data.val());
+      setChatRoomsArray(newChatRooms);
     });
-    setChatRoomsArray(newChatRooms);
   };
 
   const changeChatRoom = (chatRoom) => {
