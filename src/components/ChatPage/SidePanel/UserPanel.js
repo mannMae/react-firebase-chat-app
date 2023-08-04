@@ -14,7 +14,6 @@ import { child, set, ref as rbRef, update } from 'firebase/database';
 
 export const UserPanel = () => {
   const user = useSelector((state) => state.user.currentUser);
-  console.log(user);
   const handleLogout = () => {
     signOut(firebaseAuth);
   };

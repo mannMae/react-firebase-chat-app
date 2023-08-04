@@ -14,8 +14,8 @@ export const MessageForm = () => {
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
   const messageRef = ref(firebaseDatabase, 'messages');
-  const currentChatRoom = useSelector(
-    (state) => state.chatRoom.currentChatRoom
+  const { currentChatRoom, isPrivateChatRoom } = useSelector(
+    (state) => state.chatRoom
   );
   const user = useSelector((state) => state.user.currentUser);
 
@@ -69,10 +69,16 @@ export const MessageForm = () => {
 
   const [uploadPercentage, setUploadPercentage] = useState(0);
 
+  const getPath = (fileName) => {
+    return `message/${
+      isPrivateChatRoom ? `private/${currentChatRoom.id}` : 'public'
+    }/${fileName}`;
+  };
+
   const handleUploadImage = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const filePath = `message/public/${file.name}`;
+    const filePath = getPath(file.name);
     const metadata = { contentType: file.type };
     const storage = stRef(firebaseStorage, filePath);
     setLoading(true);

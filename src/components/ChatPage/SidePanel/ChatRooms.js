@@ -12,7 +12,10 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import { FaRegSmileWink, FaPlus } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { firebaseDatabase } from '../../../firebase';
-import { setCurrentChatRoom } from '../../../redux/actions/chatRoomAction';
+import {
+  setCurrentChatRoom,
+  setPrivateChatRoom,
+} from '../../../redux/actions/chatRoomAction';
 
 export const ChatRooms = () => {
   const dispatch = useDispatch();
@@ -57,7 +60,9 @@ export const ChatRooms = () => {
   const [chatRoomsArray, setChatRoomsArray] = useState([]);
   const [activeChatRoomId, setActiveChatRoomId] = useState('');
   const [isFirstLoaded, setIsFirstLoaded] = useState(false);
-  const chatRooms = useSelector((state) => state.chatRoom);
+  const currentChatRoom = useSelector(
+    (state) => state.chatRoom.currentChatRoom
+  );
 
   useEffect(() => {
     get(chatRoomsRef).then((res) => {
@@ -86,6 +91,7 @@ export const ChatRooms = () => {
 
   const changeChatRoom = (chatRoom) => {
     dispatch(setCurrentChatRoom(chatRoom));
+    dispatch(setPrivateChatRoom(false));
     setActiveChatRoomId(chatRoom.id);
   };
   return (
@@ -143,7 +149,8 @@ export const ChatRooms = () => {
             onClick={() => changeChatRoom(chatRoom)}
             style={{
               cursor: 'pointer',
-              backgroundColor: chatRoom.id === activeChatRoomId && '#ffffff45',
+              backgroundColor:
+                chatRoom.id === currentChatRoom.id && '#ffffff45',
               transition: 'all ease 0.3s 0s',
             }}
           >
