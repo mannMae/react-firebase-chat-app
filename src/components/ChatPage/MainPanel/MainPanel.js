@@ -10,8 +10,8 @@ export const MainPanel = () => {
   const [messages, setMessages] = useState([]);
   const [isMessageLoading, setIsMessageLoading] = useState(true);
   const [isFirstLoaded, setIsFirstLoaded] = useState(false);
+  const { currentUser } = useSelector((state) => state.user);
   const chatRoom = useSelector((state) => state.chatRoom.currentChatRoom);
-  const [m, setM] = useState([]);
 
   const messagesRef = ref(firebaseDatabase, 'messages');
 
@@ -99,7 +99,7 @@ export const MainPanel = () => {
                 <Message
                   key={message.timeStamp}
                   message={message}
-                  user={message.user}
+                  user={currentUser}
                 />
               );
             })}

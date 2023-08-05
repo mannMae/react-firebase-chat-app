@@ -3,12 +3,13 @@ import {
   child,
   get,
   onChildAdded,
+  onValue,
   push,
   ref,
   update,
 } from 'firebase/database';
 import { useEffect, useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Badge, Button, Form, Modal } from 'react-bootstrap';
 import { FaRegSmileWink, FaPlus } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { firebaseDatabase } from '../../../firebase';
@@ -58,7 +59,7 @@ export const ChatRooms = () => {
   };
 
   const [chatRoomsArray, setChatRoomsArray] = useState([]);
-  const [activeChatRoomId, setActiveChatRoomId] = useState('');
+  const [activeChatRoom, setActiveChatRoom] = useState('');
   const [isFirstLoaded, setIsFirstLoaded] = useState(false);
   const currentChatRoom = useSelector(
     (state) => state.chatRoom.currentChatRoom
@@ -72,7 +73,7 @@ export const ChatRooms = () => {
       }
       setChatRoomsArray([...currentChatRooms]);
       dispatch(setCurrentChatRoom(currentChatRooms[0]));
-      setActiveChatRoomId(currentChatRooms[0].id);
+      setActiveChatRoom({ ...currentChatRooms[0] });
       setIsFirstLoaded(true);
     });
   }, []);
@@ -85,15 +86,93 @@ export const ChatRooms = () => {
     let newChatRooms = [];
     onChildAdded(chatRoomsRef, (data) => {
       newChatRooms.push(data.val());
-      setChatRoomsArray(newChatRooms);
+      setChatRoomsArray([...newChatRooms]);
+      addNotificationListener(data.key);
     });
   };
 
   const changeChatRoom = (chatRoom) => {
     dispatch(setCurrentChatRoom(chatRoom));
     dispatch(setPrivateChatRoom(false));
-    setActiveChatRoomId(chatRoom.id);
+    setActiveChatRoom({ ...chatRoom });
+    clearNotifications(chatRoom);
   };
+
+  useEffect(() => {
+    console.log(activeChatRoom);
+  }, [activeChatRoom]);
+
+  //
+  const [notifications, setNotifications] = useState([]);
+  const messagesRef = ref(firebaseDatabase, 'messages');
+
+  const addNotificationListener = (chatRoomId) => {
+    onValue(child(messagesRef, chatRoomId), (data) => {
+      if (currentChatRoom) {
+        handleNotification(chatRoomId, activeChatRoom, notifications, data);
+      }
+    });
+  };
+
+  const handleNotification = (
+    chatRoomId,
+    currentChatRoom,
+    notifications,
+    data
+  ) => {
+    let index = notifications.findIndex(
+      (notification) => notification.id === chatRoomId
+    );
+
+    console.log(currentChatRoom);
+
+    let lastTotal = 0;
+
+    if (index === -1 || chatRoomId === currentChatRoom.id) {
+      notifications.push({
+        id: chatRoomId,
+        total: data.size,
+        lastKnownTotal: data.size,
+        count: 0,
+      });
+    } else {
+      if (chatRoomId !== currentChatRoom.id) {
+        lastTotal = notifications[index].lastKnownTotal;
+
+        if (data.size - lastTotal > 0) {
+          notifications[index].count = data.size - lastTotal;
+        }
+      }
+      notifications[index].total = data.size;
+    }
+
+    setNotifications([...notifications]);
+  };
+
+  const getNotificationCount = (chatRoomId) => {
+    let count = 0;
+
+    notifications.forEach((notification) => {
+      if (notification.id === chatRoomId) {
+        count = notification.count;
+      }
+    });
+    if (count > 0) return count;
+  };
+
+  const clearNotifications = (chatRoom) => {
+    let index = notifications.findIndex(
+      (notification) => notification.id === chatRoom.id
+    );
+
+    if (index !== -1) {
+      let updatedNotification = [...notifications];
+      updatedNotification[index].lastKnownTotal = notifications[index].total;
+      updatedNotification[index].count = 0;
+      setNotifications([...updatedNotification]);
+    }
+  };
+
   return (
     <div>
       <div
@@ -142,7 +221,15 @@ export const ChatRooms = () => {
           </Modal.Footer>
         </Modal>
       </div>
-      <ul style={{ listStyleType: 'none', padding: '0' }}>
+      <ul
+        style={{
+          listStyleType: 'none',
+          padding: '0',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '5px',
+        }}
+      >
         {chatRoomsArray.map((chatRoom, i) => (
           <li
             key={i}
@@ -150,11 +237,14 @@ export const ChatRooms = () => {
             style={{
               cursor: 'pointer',
               backgroundColor:
-                chatRoom.id === currentChatRoom.id && '#ffffff45',
+                chatRoom.id === currentChatRoom?.id && '#ffffff45',
               transition: 'all ease 0.3s 0s',
+              display: 'flex',
+              gap: '5px',
             }}
           >
             # {chatRoom.name}
+            <Badge bg="danger">{getNotificationCount(chatRoom.id)}</Badge>
           </li>
         ))}
       </ul>

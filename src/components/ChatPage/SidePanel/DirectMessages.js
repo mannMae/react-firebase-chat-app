@@ -14,7 +14,6 @@ export const DirectMessages = () => {
   const currentChatRoom = useSelector(
     (state) => state.chatRoom.currentChatRoom
   );
-  console.log(currentChatRoom);
 
   const [users, setUsers] = useState([]);
   const [activeChatRoom, setActiveChatRoom] = useState();
@@ -34,7 +33,7 @@ export const DirectMessages = () => {
   };
 
   useEffect(() => {
-    addUsersListeners(currentUser.uid);
+    addUsersListeners(currentUser?.uid);
   }, []);
 
   const changeChatRoom = (user) => {
@@ -69,7 +68,7 @@ export const DirectMessages = () => {
             style={{
               cursor: 'pointer',
               backgroundColor:
-                currentChatRoom.id === activeChatRoom && '#ffffff45',
+                currentChatRoom?.id === activeChatRoom && '#ffffff45',
               transition: 'all ease 0.3s 0s',
             }}
           >

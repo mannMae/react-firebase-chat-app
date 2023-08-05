@@ -6,7 +6,7 @@ export const Message = ({ message, user }) => {
     message.hasOwnProperty('image') && !message.hasOwnProperty('content');
 
   const isMessageMine = (message, user) => {
-    return message.user.id === user.id;
+    return message.user.id === user.uid;
   };
 
   return (
