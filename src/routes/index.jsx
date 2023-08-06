@@ -33,10 +33,8 @@ export const AppRoutes = (props) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.user.isLoading);
-  console.log(isLoading);
   useEffect(() => {
     onAuthStateChanged(firebaseAuth, (user) => {
-      console.log(user);
       if (user) {
         navigate('/');
         dispatch(setUser(user));

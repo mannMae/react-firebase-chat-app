@@ -98,10 +98,6 @@ export const ChatRooms = () => {
     clearNotifications(chatRoom);
   };
 
-  useEffect(() => {
-    console.log(activeChatRoom);
-  }, [activeChatRoom]);
-
   //
   const [notifications, setNotifications] = useState([]);
   const messagesRef = ref(firebaseDatabase, 'messages');
@@ -123,8 +119,6 @@ export const ChatRooms = () => {
     let index = notifications.findIndex(
       (notification) => notification.id === chatRoomId
     );
-
-    console.log(currentChatRoom);
 
     let lastTotal = 0;
 
