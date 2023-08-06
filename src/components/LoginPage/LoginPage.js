@@ -23,7 +23,6 @@ export const LoginPage = () => {
         formData.email,
         formData.password
       );
-      console.log(loginUser);
 
       setLoading(false);
     } catch (error) {

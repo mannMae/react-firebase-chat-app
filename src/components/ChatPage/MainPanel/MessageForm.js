@@ -97,7 +97,6 @@ export const MessageForm = () => {
           setLoading(false);
         },
         () => {
-          console.log(uploadImage);
           const imageUrl = getDownloadURL(uploadImage.snapshot.ref).then(
             (res) =>
               set(
@@ -106,7 +105,6 @@ export const MessageForm = () => {
               )
           );
           setLoading(false);
-          console.log(imageUrl);
         }
       );
     } catch (error) {

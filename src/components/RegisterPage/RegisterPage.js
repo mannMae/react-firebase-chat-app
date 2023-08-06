@@ -39,10 +39,8 @@ export const RegisterPage = () => {
         email: createdUser.user.email,
         image: createdUser.user.photoURL,
       });
-      console.log(firebaseDatabase);
 
       setLoading(false);
-      console.log(createdUser);
     } catch (error) {
       setSubmitError(error.message);
       setLoading(false);
