@@ -4,12 +4,15 @@ import { MessageForm } from './MessageForm';
 import { MessageHeader } from './MessageHeader';
 import { child, get, onChildAdded, ref } from 'firebase/database';
 import { firebaseDatabase } from '../../../firebase';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUserPosts } from '../../../redux/actions/chatRoomAction';
 
 export const MainPanel = () => {
   const [messages, setMessages] = useState([]);
   const [isMessageLoading, setIsMessageLoading] = useState(true);
   const [isFirstLoaded, setIsFirstLoaded] = useState(false);
+  const dispatch = useDispatch();
+  // const [userPostsCount, setUserPostsCount] = useState(0);
   const { currentUser } = useSelector((state) => state.user);
   const chatRoom = useSelector((state) => state.chatRoom.currentChatRoom);
 
@@ -40,8 +43,26 @@ export const MainPanel = () => {
       newMessages.push(data.val());
       setMessages([...newMessages]);
     });
+    userPostsCount(messages);
 
     setIsMessageLoading(false);
+  };
+
+  const userPostsCount = (messages) => {
+    console.log(messages);
+    let userPosts = messages.reduce((acc, message) => {
+      console.log(acc, message);
+      if (acc[message.user.name]) {
+        acc[message.user.name].count += 1;
+      } else {
+        acc[message.user.name] = {
+          image: message.user.image,
+          count: 1,
+        };
+      }
+      return acc;
+    }, {});
+    dispatch(setUserPosts(userPosts));
   };
   //
 

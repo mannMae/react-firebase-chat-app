@@ -79,7 +79,7 @@ export const ChatRooms = () => {
   }, []);
 
   useEffect(() => {
-    addChatRoomsListeners(currentChatRoom.id);
+    addChatRoomsListeners(currentChatRoom?.id);
   }, [isFirstLoaded]);
 
   const addChatRoomsListeners = (currentChatRoomId) => {
