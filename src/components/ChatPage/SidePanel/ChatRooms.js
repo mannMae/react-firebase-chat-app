@@ -79,15 +79,15 @@ export const ChatRooms = () => {
   }, []);
 
   useEffect(() => {
-    addChatRoomsListeners();
+    addChatRoomsListeners(currentChatRoom.id);
   }, [isFirstLoaded]);
 
-  const addChatRoomsListeners = () => {
+  const addChatRoomsListeners = (currentChatRoomId) => {
     let newChatRooms = [];
     onChildAdded(chatRoomsRef, (data) => {
       newChatRooms.push(data.val());
       setChatRoomsArray([...newChatRooms]);
-      addNotificationListener(data.key);
+      addNotificationListener(data.key, currentChatRoomId);
     });
   };
 
@@ -96,23 +96,24 @@ export const ChatRooms = () => {
     dispatch(setPrivateChatRoom(false));
     setActiveChatRoom({ ...chatRoom });
     clearNotifications(chatRoom);
+    addChatRoomsListeners(chatRoom.id);
   };
 
   //
   const [notifications, setNotifications] = useState([]);
   const messagesRef = ref(firebaseDatabase, 'messages');
 
-  const addNotificationListener = (chatRoomId) => {
+  const addNotificationListener = (chatRoomId, currentChatRoomId) => {
     onValue(child(messagesRef, chatRoomId), (data) => {
       if (currentChatRoom) {
-        handleNotification(chatRoomId, activeChatRoom, notifications, data);
+        handleNotification(chatRoomId, currentChatRoomId, notifications, data);
       }
     });
   };
 
   const handleNotification = (
     chatRoomId,
-    currentChatRoom,
+    currentChatRoomId,
     notifications,
     data
   ) => {
@@ -122,7 +123,7 @@ export const ChatRooms = () => {
 
     let lastTotal = 0;
 
-    if (index === -1 || chatRoomId === currentChatRoom.id) {
+    if (index === -1 || chatRoomId === currentChatRoomId) {
       notifications.push({
         id: chatRoomId,
         total: data.size,
@@ -130,7 +131,7 @@ export const ChatRooms = () => {
         count: 0,
       });
     } else {
-      if (chatRoomId !== currentChatRoom.id) {
+      if (chatRoomId !== currentChatRoomId) {
         lastTotal = notifications[index].lastKnownTotal;
 
         if (data.size - lastTotal > 0) {
