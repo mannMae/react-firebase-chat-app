@@ -1,4 +1,11 @@
-import { child, ref, serverTimestamp, set, push } from 'firebase/database';
+import {
+  child,
+  ref,
+  serverTimestamp,
+  set,
+  push,
+  remove,
+} from 'firebase/database';
 import { useRef, useState } from 'react';
 import { Col, Form, ProgressBar, Row } from 'react-bootstrap';
 import { firebaseDatabase, firebaseStorage } from '../../../firebase';
@@ -14,22 +21,31 @@ export const MessageForm = () => {
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
   const messageRef = ref(firebaseDatabase, 'messages');
+  const typingRef = ref(firebaseDatabase, 'typing');
   const { currentChatRoom, isPrivateChatRoom } = useSelector(
     (state) => state.chatRoom
   );
-  const user = useSelector((state) => state.user.currentUser);
+  const { currentUser } = useSelector((state) => state.user);
 
   const handleChange = (e) => {
     setContent(e.target.value);
+    if (e.target.value) {
+      set(
+        child(child(typingRef, currentChatRoom.id), currentUser.uid),
+        currentUser.displayName
+      );
+    } else {
+      remove(child(child(typingRef, currentChatRoom.id), currentUser.uid));
+    }
   };
 
   const createMessage = (fileUrl = null) => {
     const message = {
       timeStamp: serverTimestamp(),
       user: {
-        id: user.uid,
-        name: user.displayName,
-        image: user.photoURL,
+        id: currentUser.uid,
+        name: currentUser.displayName,
+        image: currentUser.photoURL,
       },
     };
     if (fileUrl !== null) {
@@ -48,6 +64,9 @@ export const MessageForm = () => {
 
     try {
       await set(push(child(messageRef, currentChatRoom.id)), createMessage());
+
+      remove(child(child(typingRef, currentChatRoom.id), currentUser.uid));
+
       setLoading(false);
       setContent('');
       setErrors([]);

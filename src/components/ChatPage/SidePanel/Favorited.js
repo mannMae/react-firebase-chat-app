@@ -65,7 +65,8 @@ export const Favorited = () => {
               onClick={() => changeChatRoom(room)}
               style={{
                 cursor: 'pointer',
-                backgroundColor: room.id === currentChatRoom.id && '#ffffff45',
+                backgroundColor:
+                  room?.id === currentChatRoom?.id && '#ffffff45',
               }}
             >
               # {room.name}

@@ -68,7 +68,7 @@ export const MessageHeader = ({ handleSearchChange }) => {
       setIsFavorited(true);
     }
   };
-  console.log(userPosts);
+
   return (
     <div
       style={{
@@ -111,16 +111,18 @@ export const MessageHeader = ({ handleSearchChange }) => {
             </InputGroup>
           </Col>
         </Row>
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <p>
-            <Image
-              src={currentChatRoom?.createdBy?.image}
-              roundedCircle
-              style={{ width: '30px', height: '30px' }}
-            />{' '}
-            {currentChatRoom?.createdBy?.name}
-          </p>
-        </div>
+        {!isPrivateChatRoom && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <p>
+              <Image
+                src={currentChatRoom?.createdBy?.image}
+                roundedCircle
+                style={{ width: '30px', height: '30px' }}
+              />{' '}
+              {currentChatRoom?.createdBy?.name}
+            </p>
+          </div>
+        )}
         <Row>
           <Col>
             <Accordion>
@@ -166,7 +168,6 @@ export const MessageHeader = ({ handleSearchChange }) => {
                       Object.entries(userPosts)
                         .sort((a, b) => b[1].count - a[1].count)
                         .map(([key, value], i) => {
-                          console.log(key, value);
                           return (
                             <div
                               key={i}
