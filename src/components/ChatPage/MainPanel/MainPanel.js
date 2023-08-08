@@ -5,6 +5,7 @@ import { MessageHeader } from './MessageHeader';
 import {
   child,
   get,
+  off,
   onChildAdded,
   onChildRemoved,
   ref,
@@ -150,7 +151,7 @@ export const MainPanel = () => {
 
   const removeEventListener = (listeners) => {
     listeners.forEach((listener) => {
-      child(listener.ref, listener.chatRoomId).off();
+      off(child(listener.ref, listener.chatRoomId), listener.eventType);
     });
   };
 
