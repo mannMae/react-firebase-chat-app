@@ -132,11 +132,18 @@ export const MessageForm = () => {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.keyCode === 13) {
+      handleSubmit();
+    }
+  };
+
   return (
     <div>
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="">
           <Form.Control
+            onKeyDown={handleKeyDown}
             value={content}
             onChange={handleChange}
             as="textarea"
