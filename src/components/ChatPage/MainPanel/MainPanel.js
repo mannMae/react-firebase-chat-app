@@ -13,6 +13,7 @@ import {
 import { firebaseDatabase } from '../../../firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserPosts } from '../../../redux/actions/chatRoomAction';
+import { Skeleton } from '../../../commons/components/Skeleton';
 
 export const MainPanel = () => {
   const [messages, setMessages] = useState([]);
@@ -173,6 +174,7 @@ export const MainPanel = () => {
           overflowY: 'auto',
         }}
       >
+        {isMessageLoading && [...Array(8)].map((v, i) => <Skeleton key={i} />)}
         {searchTerm
           ? searchResults.map((message, i) => {
               return (
