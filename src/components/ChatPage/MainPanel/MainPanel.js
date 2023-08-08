@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Message } from './Message';
 import { MessageForm } from './MessageForm';
 import { MessageHeader } from './MessageHeader';
@@ -117,13 +117,8 @@ export const MainPanel = () => {
     addEventListener(chatRoomId, typingRef, 'child_added');
 
     onChildRemoved(child(typingRef, chatRoomId), (data) => {
-      console.log(data.key);
       if (data.key !== currentUser.id) {
-        console.log(newTypingUsers);
         newTypingUsers = newTypingUsers.filter((user, i) => {
-          console.log(user);
-          console.log(data.key);
-          console.log(user.id === data.key);
           return user.id !== data.key;
         });
       }
@@ -154,6 +149,15 @@ export const MainPanel = () => {
       off(child(listener.ref, listener.chatRoomId), listener.eventType);
     });
   };
+
+  //
+  const messageEndRef = useRef(null);
+
+  useEffect(() => {
+    if (messageEndRef) {
+      messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   return (
     <div style={{ padding: '2rem 2rem 0 2rem' }}>
@@ -197,6 +201,7 @@ export const MainPanel = () => {
             typingUsers.length - 1
           }명이 채팅을 입력하고 있습니다...`}</span>
         ) : null}
+        <div ref={(el) => (messageEndRef.current = el)} />
       </div>
 
       <MessageForm />
